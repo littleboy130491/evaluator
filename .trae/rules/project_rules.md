@@ -1,308 +1,154 @@
-# Coding Agent Handbook
+# CODING_AGENT_HANDBOOK
 
 ---
 
-## 📋 Project Reference Documents
-**ALWAYS consult these documents before any implementation:**
-- **ERD.md** - Database structure, relationships, and Filament resource guidance
-- **PRD.md** - Business requirements, features, and tech stack requirements
+## 📌 Compact Rules (Quick Reference)
 
-## 🚀 Quick Reference Workflow
+### Core References
+- `PRD.md` — Product Requirements
+- `ERD.md` — Entity Relationships
+- `CODING_AGENT_HANDBOOK.md` — Full rules
 
-1. **DESIGN**
-   - Review ERD.md and PRD.md to understand requirements and constraints
-   - Create `phase_{n}.md` with Objectives, Success Criteria, and Test Plan.
-   - Follow TDD.
+### Roles
+- **ARCHITECT:** Make `project_master_plan.md` + `phase_{n}.md` from templates. Objectives, success criteria, and test plan from PRD/ERD.
+- **EXECUTE:** Follow phase doc, use TDD, Filament MCP Context7, log filenames, update Execution Log & master plan.
+- **UPDATE:** Adjust phase doc with results & changes, sync master plan progress.
+- **CHECK:** Verify success criteria met, run tests. Pass → mark completed; Fail → log Failure Analysis, mark failed.
+- **DEBUG:** Trace bugs to phase, find root cause (test gap, PRD/ERD issue, deviation), log in phase Debug Log + master plan tracker.
+- **REPAIR:** Fix DEBUG issues using TDD without skipping documentation.
 
-2. **EXECUTE**
-   - **Always reference ERD.md for database relationships and constraints**
-   - **Always reference PRD.md for business logic and requirements**
+### Templates
+- **project_master_plan.md:** Table of phases (status), Debug Tracker.
+- **phase_{n}.md:** Objectives, success criteria, tasks, tests, execution log, failure analysis, debug log.
 
-2.1 Execute: Backend / Eloquent Models
-Context: Use Laravel's Eloquent ORM and conventions. Follow ERD.md structure.
+### Commands
+- **ARCHITECT INIT:** Create master plan.
+- **ARCHITECT PHASE:** Create new phase doc.
+- **EXECUTE:** Verify PRD/ERD alignment → Write/Update tests → Implement in small steps → Log results.
+- **UPDATE:** Sync docs with latest state.
+- **CHECK:** Validate, run tests, update status.
+- **DEBUG:** Identify phase → Analyze → Log → Suggest fix/schedule.
+- **REPAIR:** Apply fix following EXECUTE rules.
 
-Steps:
-
-Create migration using php artisan make:migration.
-Create model with php artisan make:model ModelName.
-Use factories for test data (php artisan make:factory).
-Ensure models use fillable/guarded properly.
-Implement relationships as defined in ERD.md.
-Update phase doc Execution Log with model and migration filenames.
-
-2.2 Execute: Filament Resource
-Context: Use MCP context7 for Filament. Use Filament PHP + Filament Shield as specified in PRD.md Tech Stack Requirements.
-
-Steps:
-
-Generate resource:
-php artisan make:filament-resource ModelName
-Configure forms, tables, and filters per ERD.md specifications.
-Implement authorization with Filament Shield + Spatie Roles per PRD.md.
-Follow Filament UI/UX guidelines (section ordering, field types, search, filters).
-Add integration tests to confirm the resource works.
-
-2.3 Execute: Testing (TDD)
-Context: Use Laravel’s built-in PHPUnit/Pest.
-
-Steps:
-
-Write failing test first (tests/Feature or tests/Unit).
-Implement minimal code to pass test.
-Refactor with green tests.
-Use factories & seeders to simulate realistic data.
-
-2.4 Execute: Controllers
-Steps:
-
-Generate controller (php artisan make:controller).
-Implement routes in routes/web.php.
-Validate requests using Form Requests.
-Return JSON or view depending on endpoint type.
-
-2.5 Execute: Blade / Frontend
-Steps:
-
-Use Laravel Blade templates.
-Follow DRY principle — extract layouts and components.
-Keep Tailwind styling consistent with project design.
-
-2.6 Execute: MCP Context Usage
-MCP Context7 Rule:
-
-When generating Laravel code, explicitly set MCP context to “Laravel vX + Filament v3 + Spatie Permissions” before writing code.
-Include relevant imports, service providers, and config changes in the code output.
-Never generate raw PHP without Laravel conventions.
-
-3. **UPDATE**
-   - Document results, affected files, and changes to tests or criteria.
-
-4. **CHECK**
-   - If criteria ✅ → Mark phase Completed + update `project_master_plan.md`.
-   - If ❌ → Add Failure Report and keep phase In Progress/Blocked.
-
-5. **SYNC**
-   - Always update `project_master_plan.md` after any phase change.
-   - Keep status table, progress bar, and notes in sync.
+### Principles
+1. Always TDD.
+2. Keep PRD/ERD current.
+3. Log filenames for traceability.
+4. Never skip CHECK.
+5. All DEBUG findings must be documented.
+6. For Filament resources, **always use Filament generators**, never create controllers/routes manually unless explicitly stated.
 
 ---
 
-This handbook defines the rules, processes, templates, and automation steps for managing a project using a phase-based workflow with Test-Driven Development (TDD).
+## 📖 Full Handbook
+
+### 1. ARCHITECT
+**Goal:** Plan the project in structured phases.
+
+**Actions:**
+1. Create `project_master_plan.md` using the **Master Plan Template**.
+2. Create `phase_{number}.md` files using the **Phase Template**.
+3. Ensure **Objectives** and **Success Criteria** are based on `PRD.md` and `ERD.md`.
+4. Define **test cases** for each success criterion.
 
 ---
 
-## 1. Roles & Functions
+### 2. EXECUTE
+**Goal:** Implement tasks defined in `phase_{number}.md` using **Test Driven Development**.
 
-### **Architect**
-**Purpose:** Create a high-level plan and break the project into phases.
+**Pre-Execution Verification (Mandatory)**
+- [ ] All related `ERD.md` tables, fields, and relationships identified
+- [ ] All related `PRD.md` requirements mapped to technical tasks
+- [ ] No conflicting constraints between PRD and ERD
+- [ ] Tests written based on PRD success criteria
+- [ ] For any Filament feature, review and follow the official Filament testing guide: https://filamentphp.com/docs/3.x/panels/testing
+- [ ] For any Livewire feature, review and follow the official Livewire testing guide: https://livewire.laravel.com/docs/testing
 
-**Steps:**
-1. Split project into sequential phases, each stored in `phase_{number}.md`.
-2. For each phase, include:
-   - **Objectives**
-   - **Success Criteria**
-   - **Test Plan** (TDD)
-3. Follow the Phase Template (Section 3.1).
-
----
-
-### **Execute**
-**Purpose:** Implement tasks defined in a given phase.
-
-**Steps:**
-1. Follow TDD:
-   - Write tests first.
-   - Implement code to pass tests.
-   - Refactor while keeping tests green.
-2. Append work results to the `Execution Log` in the phase doc.
-3. Include:
-   - Task description
-   - Related filenames
-   - Result summary
+**Execution Rules**
+1. Follow TDD strictly.
+2. Use **Laravel + Filament MCP Context7** for Filament resources.
+3. **Never create controllers/routes manually for Filament-managed resources** — always use `php artisan make:filament-resource`.
+4. Write/update relevant tests first, then implement code.
+5. Record all created/modified filenames in the Execution Log.
+6. Update `project_master_plan.md` with progress.
 
 ---
 
-### **Update**
-**Purpose:** Keep documentation current.
+### 3. UPDATE
+**Goal:** Keep documentation in sync with implementation.
 
-**Steps:**
-1. After execution, update:
-   - Execution results
-   - Affected files
-   - Changes to tests or criteria
-2. Ensure traceability for all changes.
+**Actions:**
+1. Append results to `phase_{number}.md` Execution Log.
+2. Record changes in `project_master_plan.md`.
+3. Update PRD/ERD if scope changes.
 
 ---
 
-### **Check**
-**Purpose:** Validate phase completion.
+### 4. CHECK
+**Goal:** Confirm success criteria are met.
 
-**Steps:**
-1. Review all deliverables and tests.
-2. If **criteria are met**:
-   - Mark ✅ in phase doc
-   - Mark phase as Completed in master plan
-3. If **criteria are not met**:
-   - Append Failure Report
-   - Keep phase In Progress or Blocked
+**Actions:**
+1. Run all tests defined in the phase doc.
+2. If all pass → Mark phase as `Completed` in `project_master_plan.md`.
+3. If any fail → Log Failure Analysis in `phase_{number}.md`.
 
 ---
 
-## 2. Master Plan Structure
+### 5. DEBUG
+**Goal:** Investigate and resolve unexpected issues.
 
-### **2.1 `project_master_plan.md` Template**
+**Actions:**
+1. Trace the bug to the responsible phase.
+2. Identify root cause:
+   - Missing or incomplete test
+   - Incorrect implementation
+   - PRD/ERD mismatch
+   - Skipped Filament generation rules
+3. Log findings in `Debug Log` section of `phase_{number}.md`.
+4. Suggest counter-measures but do **not** edit the code directly unless instructed.
+
+---
+
+### 6. REPAIR
+**Goal:** Fix issues identified during DEBUG while maintaining TDD discipline.
+
+**Actions:**
+1. Perform DEBUG first to identify and document the root cause in Debug Log.
+2. Upon instruction to repair, follow EXECUTE rules:
+   - Verify PRD/ERD alignment.
+   - Write/update failing tests first.
+   - For Filament and Livewire testing, follow the official Filament and Livewire testing guide
+   - Implement fix in small steps.
+   - Record all created/modified filenames in the Execution Log.
+3. Update:
+   - `phase_{number}.md` Execution Log with repair steps.
+   - `project_master_plan.md` with progress.
+4. Run all tests from the relevant phase to confirm fix before marking as completed.
+
+---
+
+## 📂 Templates
+
+### PRD.md Template
 ```markdown
-# Project Master Plan – {Project Name}
+# Product Requirements Document
 
 ## 1. Overview
-**Project Goal:**  
-{Description}  
+Describe the purpose, scope, and key outcomes of the project.
 
-**Approach:**  
-- Phased delivery  
-- Test-Driven Development (TDD)  
-- Documentation for each phase
+## 2. Features
+List features grouped by category.
 
----
+## 3. Packages / Setup
+**Required Packages:**
+| Package | Version | Purpose |
+|---------|---------|---------|
+| filament/filament | ^3.0 | Admin panel |
+| bezhansalleh/filament-shield | ^3.0 | Role & permission management |
 
-## 2. Phase Summary Table
-| Phase # | Title / Description | Status | Completion Date | Phase Doc Link |
-|---------|---------------------|--------|-----------------|----------------|
-| 1       | Example Title        | ✅ Completed | 2025-08-12      | [phase_1.md](phase_1.md) |
-
----
-
-## 3. Progress Overview
-- **Total Phases:** X  
-- **Completed:** X  
-- **In Progress:** X  
-- **Blocked:** X  
-- **Remaining:** X  
-
-**Visual Progress:**  
-```text
-[#####-----] 50%
-4. Dependencies & Notes
-List dependencies here
-
-5. Change Log
-Date	Change Description	Author
-YYYY-MM-DD	Example change	Agent
-
-yaml
-Copy
-Edit
-
----
-
-## 3. Phase Documentation
-
-### **3.1 `phase_{number}.md` Template**
-```markdown
-# Phase {number} – {Phase Title}
-
-## 1. Objectives
-- [ ] List goals
-
-## 2. Success Criteria
-- [ ] Define measurable outcomes
-
-## 3. Test Plan (TDD)
-### Pre-Implementation Tests
-- **Test Name:**  
-- **Description:**  
-- **Expected Result:**  
-
----
-
-## 4. Execution Log
-| Date       | Task Description | Related Files | Notes/Result |
-|------------|------------------|---------------|--------------|
-| YYYY-MM-DD | Example Task     | file.js       | Passed tests |
-
----
-
-## 5. Check & Validation
-- **Validation Date:** YYYY-MM-DD  
-- **Criteria Met?** ✅ / ❌  
-- **Details:**  
-
----
-
-## 6. Failure Report (If Criteria Not Met)
-- **Reason(s):**  
-- **Related Files:**  
-- **Next Steps / Fixes Needed:**
-
----
-
-## 7. Phase Completion Status
-- Status: `In Progress` / `Completed` / `Blocked`
-- Completion Date: YYYY-MM-DD
-4. Automation Rules
-4.1 Sync Between Phase Docs and Master Plan
-On phase creation → Add row to master plan.
-
-On phase execution completion → No change unless criteria met.
-
-On phase check:
-
-✅ → Mark Completed in master plan + update progress bar.
-
-❌ → Keep In Progress / Blocked + add note.
-
-On status change → Update master plan table + progress bar.
-
-On title change → Update title in master plan.
-
-On global notes/dependencies → Append to master plan notes.
-
-Always preserve markdown table formatting.
-
-5. Sync Prompt for Agent
-When updating or creating a phase_{n}.md, follow these steps:
-
-Step 1 – Identify Phase
-
-Extract {n} from filename.
-
-Get title from first heading.
-
-Step 2 – Determine Action
-
-New file → Add row in master plan.
-
-Execution update → Only update if criteria changed.
-
-Check update → Update status in master plan.
-
-Title change → Update title in master plan.
-
-Step 3 – Update Master Plan
-
-Keep table sorted by phase number.
-
-Format link as [phase_{n}.md](phase_{n}.md).
-
-Step 4 – Update Progress
-
-Calculate:
-
-mathematica
-Copy
-Edit
-Progress % = (Completed / Total) × 100
-Bar: [#####-----] {percent}%
-
-Step 5 – Dependencies & Notes
-
-Add any new issues from Failure Report.
-
-Step 6 – Log Change
-
-Copy
-Edit
-| YYYY-MM-DD | {Description} | Agent |
-Step 7 – Save
-
-Save both files after update.
+**Installation Commands:**
+```bash
+composer require filament/filament
+php artisan filament:install
+composer require bezhansalleh/filament-shield
+php artisan vendor:publish --tag="filament-shield-config"

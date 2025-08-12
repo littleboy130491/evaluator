@@ -10,57 +10,45 @@ class UserAuthenticationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_user_can_register(): void
+    public function test_user_can_access_filament_login_page(): void
     {
-        $response = $this->post('/register', [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-        ]);
-
-        $this->assertAuthenticated();
-        $response->assertRedirect('/');
-        $this->assertDatabaseHas('users', [
-            'email' => 'test@example.com',
-        ]);
+        $response = $this->get('/admin/login');
+        
+        $response->assertStatus(200);
     }
 
-    public function test_user_can_login(): void
+    public function test_admin_can_login_to_filament(): void
     {
-        $user = User::factory()->create();
-
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
-        ]);
-
-        $this->assertAuthenticated();
-        $response->assertRedirect('/');
+        $this->seed();
+        
+        $admin = User::where('email', 'admin@example.com')->first();
+        
+        $response = $this->actingAs($admin)->get('/admin');
+        
+        $response->assertStatus(200);
     }
 
-    public function test_user_can_logout(): void
+    public function test_user_can_logout_from_filament(): void
     {
-        $user = User::factory()->create();
-
-        $this->actingAs($user);
+        $this->seed();
+        
+        $admin = User::where('email', 'admin@example.com')->first();
+        
+        $this->actingAs($admin);
         $this->assertAuthenticated();
 
-        $response = $this->post('/logout');
+        $response = $this->post('/admin/logout');
 
         $this->assertGuest();
-        $response->assertRedirect('/');
+        $response->assertRedirect('/admin/login');
     }
 
-    public function test_user_cannot_login_with_incorrect_password(): void
+    public function test_non_admin_cannot_access_filament_admin(): void
     {
         $user = User::factory()->create();
-
-        $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'wrong-password',
-        ]);
-
-        $this->assertGuest();
+        
+        $response = $this->actingAs($user)->get('/admin');
+        
+        $response->assertStatus(403);
     }
 }

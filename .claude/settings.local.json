@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php artisan:*)",
+      "Bash(vendor/bin/sail php artisan test:*)",
+      "Bash(composer test:*)",
+      "Bash(where php)",
+      "Bash(C:/Users/user/.config/herd/bin/php.bat artisan test)",
+      "Bash(C:/Users/user/.config/herd/bin/php.bat artisan test --coverage)",
+      "Bash(C:/Users/user/.config/herd/bin/php.bat artisan test --filter=UserResourceTest)",
+      "Bash(C:/Users/user/.config/herd/bin/php.bat artisan test --filter=UserManagementTest)",
+      "Bash(C:/Users/user/.config/herd/bin/php.bat artisan test --stop-on-failure)",
+      "Bash(C:/Users/user/.config/herd/bin/php.bat artisan migrate:status)",
+      "Bash(C:/Users/user/.config/herd/bin/php.bat artisan test --filter=\"Unit\")",
+      "Bash(C:/Users/user/.config/herd/bin/php.bat artisan test --filter=UserAuthenticationTest)",
+      "Bash(C:/Users/user/.config/herd/bin/php.bat artisan route:list)",
+      "Bash(C:/Users/user/.config/herd/bin/php.bat artisan make:controller OutletController --resource)",
+      "Bash(C:/Users/user/.config/herd/bin/php.bat artisan make:controller EvaluationCriteriaController --resource)",
+      "Bash(rm:*)",
+      "Bash(C:/Users/user/.config/herd/bin/php.bat artisan route:list --name=filament)",
+      "Bash(C:/Users/user/.config/herd/bin/php.bat artisan:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

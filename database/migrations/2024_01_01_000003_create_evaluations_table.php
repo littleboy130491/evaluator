@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('outlet_id')->constrained()->onDelete('cascade');
             $table->date('evaluation_date');
-            $table->enum('status', ['draft', 'submitted', 'approved', 'rejected'])->default('draft');
+            $table->enum('status', ['draft', 'pending', 'submitted', 'completed', 'approved', 'rejected'])->default('draft');
             $table->text('notes')->nullable();
             $table->foreignId('approved_by')->nullable()->constrained('users');
             $table->timestamp('approved_at')->nullable();

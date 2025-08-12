@@ -6,10 +6,23 @@ use App\Models\Evaluation;
 use App\Models\EvaluationCriteria;
 use App\Models\EvaluationCriteriaScore;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class EvaluationService
 {
+    /**
+     * @var HistoryService
+     */
+    protected $historyService;
+
+    /**
+     * Constructor
+     */
+    public function __construct(HistoryService $historyService)
+    {
+        $this->historyService = $historyService;
+    }
     /**
      * Create a new evaluation
      *
@@ -121,10 +134,24 @@ class EvaluationService
     public function changeStatus(int $evaluationId, string $status): Evaluation
     {
         $evaluation = Evaluation::findOrFail($evaluationId);
+        $oldStatus = $evaluation->status;
+        
+        // Validate status is one of the allowed values
+        if (!in_array($status, ['draft', 'pending', 'submitted', 'completed', 'approved', 'rejected'])) {
+            throw new \InvalidArgumentException("Invalid status value: {$status}");
+        }
         
         $evaluation->update([
             'status' => $status,
         ]);
+        
+        // Record status change specifically
+        $this->historyService->recordHistory(
+            $evaluation,
+            'status_changed',
+            ['status' => $oldStatus],
+            ['status' => $status]
+        );
         
         return $evaluation->fresh();
     }
@@ -139,12 +166,27 @@ class EvaluationService
     public function approveEvaluation(int $evaluationId, int $approverId): Evaluation
     {
         $evaluation = Evaluation::findOrFail($evaluationId);
+        $oldValues = [
+            'status' => $evaluation->status,
+            'approved_by' => $evaluation->approved_by,
+            'approved_at' => $evaluation->approved_at,
+        ];
         
-        $evaluation->update([
+        $newValues = [
             'status' => 'approved',
             'approved_by' => $approverId,
             'approved_at' => now(),
-        ]);
+        ];
+        
+        $evaluation->update($newValues);
+        
+        // Record approval action
+        $this->historyService->recordHistory(
+            $evaluation,
+            'approved',
+            $oldValues,
+            $newValues
+        );
         
         return $evaluation->fresh();
     }
@@ -159,12 +201,27 @@ class EvaluationService
     public function rejectEvaluation(int $evaluationId, int $approverId): Evaluation
     {
         $evaluation = Evaluation::findOrFail($evaluationId);
+        $oldValues = [
+            'status' => $evaluation->status,
+            'approved_by' => $evaluation->approved_by,
+            'approved_at' => $evaluation->approved_at,
+        ];
         
-        $evaluation->update([
+        $newValues = [
             'status' => 'rejected',
             'approved_by' => $approverId,
             'approved_at' => now(),
-        ]);
+        ];
+        
+        $evaluation->update($newValues);
+        
+        // Record rejection action
+        $this->historyService->recordHistory(
+            $evaluation,
+            'rejected',
+            $oldValues,
+            $newValues
+        );
         
         return $evaluation->fresh();
     }

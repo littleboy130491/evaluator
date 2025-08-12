@@ -2,62 +2,64 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
+use Livewire\Livewire;
 
 class UserManagementTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed();
+    }
+
     public function test_admin_can_create_user(): void
     {
-        // Create admin role
-        $adminRole = Role::create(['name' => 'admin']);
+        $admin = User::where('email', 'admin@example.com')->first();
+        $this->assertNotNull($admin, 'Admin user should exist after seeding');
         
-        // Create admin user
-        $admin = User::factory()->create();
-        $admin->assignRole($adminRole);
-
         $this->actingAs($admin);
 
-        $response = $this->post('/users', [
-            'name' => 'New User',
-            'email' => 'newuser@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-        ]);
+        Livewire::test(UserResource\Pages\CreateUser::class)
+            ->fillForm([
+                'name' => 'New User',
+                'email' => 'newuser@example.com',
+                'password' => 'password',
+                'roles' => [1], // Admin role ID
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
 
-        $response->assertStatus(302); // Redirect after creation
         $this->assertDatabaseHas('users', [
             'email' => 'newuser@example.com',
+            'name' => 'New User',
         ]);
     }
 
     public function test_admin_can_edit_user(): void
     {
-        // Create admin role
-        $adminRole = Role::create(['name' => 'admin']);
+        $admin = User::where('email', 'admin@example.com')->first();
+        $user = User::where('email', 'evaluator@example.com')->first();
         
-        // Create admin user
-        $admin = User::factory()->create();
-        $admin->assignRole($adminRole);
-
-        // Create user to edit
-        $user = User::factory()->create([
-            'name' => 'Original Name',
-            'email' => 'original@example.com',
-        ]);
+        $this->assertNotNull($admin, 'Admin user should exist after seeding');
+        $this->assertNotNull($user, 'Evaluator user should exist after seeding');
 
         $this->actingAs($admin);
 
-        $response = $this->put("/users/{$user->id}", [
-            'name' => 'Updated Name',
-            'email' => 'updated@example.com',
-        ]);
+        Livewire::test(UserResource\Pages\EditUser::class, ['record' => $user->id])
+            ->fillForm([
+                'name' => 'Updated Name',
+                'email' => 'updated@example.com',
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
 
-        $response->assertStatus(302); // Redirect after update
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
             'name' => 'Updated Name',
@@ -67,21 +69,17 @@ class UserManagementTest extends TestCase
 
     public function test_admin_can_delete_user(): void
     {
-        // Create admin role
-        $adminRole = Role::create(['name' => 'admin']);
+        $admin = User::where('email', 'admin@example.com')->first();
+        $user = User::where('email', 'evaluator@example.com')->first();
         
-        // Create admin user
-        $admin = User::factory()->create();
-        $admin->assignRole($adminRole);
-
-        // Create user to delete
-        $user = User::factory()->create();
+        $this->assertNotNull($admin, 'Admin user should exist after seeding');
+        $this->assertNotNull($user, 'Evaluator user should exist after seeding');
 
         $this->actingAs($admin);
 
-        $response = $this->delete("/users/{$user->id}");
+        Livewire::test(UserResource\Pages\ListUsers::class)
+            ->callTableAction('delete', $user->id);
 
-        $response->assertStatus(302); // Redirect after deletion
         $this->assertDatabaseMissing('users', [
             'id' => $user->id,
         ]);
@@ -89,24 +87,23 @@ class UserManagementTest extends TestCase
 
     public function test_admin_can_assign_role_to_user(): void
     {
-        // Create admin and evaluator roles
-        $adminRole = Role::create(['name' => 'admin']);
-        $evaluatorRole = Role::create(['name' => 'evaluator']);
+        $admin = User::where('email', 'admin@example.com')->first();
+        $user = User::where('email', 'evaluator@example.com')->first();
+        $managerRole = Role::where('name', 'manager')->first();
         
-        // Create admin user
-        $admin = User::factory()->create();
-        $admin->assignRole($adminRole);
-
-        // Create user to assign role
-        $user = User::factory()->create();
+        $this->assertNotNull($admin, 'Admin user should exist after seeding');
+        $this->assertNotNull($user, 'Evaluator user should exist after seeding');
+        $this->assertNotNull($managerRole, 'Manager role should exist after seeding');
 
         $this->actingAs($admin);
 
-        $response = $this->post("/users/{$user->id}/roles", [
-            'roles' => ['evaluator'],
-        ]);
+        Livewire::test(UserResource\Pages\EditUser::class, ['record' => $user->id])
+            ->fillForm([
+                'roles' => [$managerRole->id], // Assign manager role
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
 
-        $response->assertStatus(302); // Redirect after role assignment
-        $this->assertTrue($user->fresh()->hasRole('evaluator'));
+        $this->assertTrue($user->fresh()->hasRole('manager'));
     }
 }

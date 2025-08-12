@@ -18,9 +18,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Seed roles, permissions and default users
-        $this->call(ShieldSeeder::class);
-        
-        // Default users (admin, evaluator, manager) are created in ShieldSeeder
+        $this->call(RolesAndPermissionsSeeder::class);
 
         // Create additional evaluator users
         User::factory(3)->create()->each(function ($user) {

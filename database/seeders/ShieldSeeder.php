@@ -18,7 +18,7 @@ class ShieldSeeder extends Seeder
             {
                 "name":"super_admin",
                 "guard_name":"web",
-                "permissions":["view_role","view_any_role","create_role","update_role","delete_role","delete_any_role"]
+                "permissions":["view_role","view_any_role","create_role","update_role","delete_role","delete_any_role","view_user","view_any_user","create_user","update_user","delete_user","delete_any_user","view_outlet","view_any_outlet","create_outlet","update_outlet","delete_outlet","delete_any_outlet","view_evaluation","view_any_evaluation","create_evaluation","update_evaluation","delete_evaluation","delete_any_evaluation","view_criteria","view_any_criteria","create_criteria","update_criteria","delete_criteria","delete_any_criteria","view_criteria_score","view_any_criteria_score","create_criteria_score","update_criteria_score","delete_criteria_score","delete_any_criteria_score"]
             },
             {
                 "name":"admin",
@@ -94,6 +94,17 @@ class ShieldSeeder extends Seeder
     
     protected function createDefaultUsers(): void
     {
+        // Create super_admin user
+        $superAdmin = User::updateOrCreate(
+            ['email' => 'super_admin@example.com'],
+            [
+                'name' => 'Super Admin User',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $superAdmin->assignRole('super_admin');
+        
         // Create admin user
         $admin = User::updateOrCreate(
             ['email' => 'admin@example.com'],
@@ -104,6 +115,16 @@ class ShieldSeeder extends Seeder
             ]
         );
         $admin->assignRole('admin');
+        
+        // Ensure admin has all necessary permissions
+        $admin->givePermissionTo([
+            'view_user',
+            'view_any_user',
+            'create_user',
+            'update_user',
+            'delete_user',
+            'delete_any_user'
+        ]);
         
         // Create evaluator user
         $evaluator = User::updateOrCreate(

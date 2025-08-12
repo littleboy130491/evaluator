@@ -8,19 +8,29 @@ use App\Models\EvaluationCriteriaScore;
 use App\Models\Outlet;
 use App\Models\User;
 use App\Services\EvaluationService;
+use App\Services\HistoryService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Mockery;
 
 class EvaluationServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     private EvaluationService $evaluationService;
+    private HistoryService $historyService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->evaluationService = new EvaluationService();
+        $this->historyService = Mockery::mock(HistoryService::class);
+        
+        // Set up default expectations for HistoryService
+        $this->historyService->shouldReceive('recordHistory')
+            ->withAnyArgs()
+            ->byDefault();
+            
+        $this->evaluationService = new EvaluationService($this->historyService);
     }
 
     /** @test */

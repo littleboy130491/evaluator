@@ -33,26 +33,47 @@ class RolesAndPermissionsSeeder extends Seeder
             'delete roles',
             'view roles',
             
-            // Outlet management
-            'manage outlets',
-            'create outlets',
-            'edit outlets',
-            'delete outlets',
-            'view outlets',
+            // Outlet management (Filament Shield format)
+            'view_any_outlet',
+            'view_outlet',
+            'create_outlet',
+            'update_outlet',
+            'delete_outlet',
+            'delete_any_outlet',
+            'force_delete_outlet',
+            'force_delete_any_outlet',
+            'restore_outlet',
+            'restore_any_outlet',
+            'replicate_outlet',
+            'reorder_outlet',
             
-            // Criteria management
-            'manage criteria',
-            'create criteria',
-            'edit criteria',
-            'delete criteria',
-            'view criteria',
+            // Evaluation criteria permissions (Filament Shield format)
+            'view_any_evaluation::criteria',
+            'view_evaluation::criteria',
+            'create_evaluation::criteria',
+            'update_evaluation::criteria',
+            'delete_evaluation::criteria',
+            'delete_any_evaluation::criteria',
+            'force_delete_evaluation::criteria',
+            'force_delete_any_evaluation::criteria',
+            'restore_evaluation::criteria',
+            'restore_any_evaluation::criteria',
+            'replicate_evaluation::criteria',
+            'reorder_evaluation::criteria',
             
-            // Evaluation management
-            'manage evaluations',
-            'create evaluations',
-            'edit evaluations',
-            'delete evaluations',
-            'view evaluations',
+            // Evaluation management (Filament Shield format)
+            'view_any_evaluation',
+            'view_evaluation',
+            'create_evaluation',
+            'update_evaluation',
+            'delete_evaluation',
+            'delete_any_evaluation',
+            'force_delete_evaluation',
+            'force_delete_any_evaluation',
+            'restore_evaluation',
+            'restore_any_evaluation',
+            'replicate_evaluation',
+            'reorder_evaluation',
             'approve evaluations',
             'reject evaluations',
             
@@ -77,22 +98,27 @@ class RolesAndPermissionsSeeder extends Seeder
         // Evaluator role
         $evaluatorRole = Role::create(['name' => 'evaluator']);
         $evaluatorRole->givePermissionTo([
-            'create evaluations',
-            'edit evaluations',
-            'view evaluations',
-            'view outlets',
-            'view criteria',
+            'create_evaluation',
+            'update_evaluation',
+            'view_evaluation',
+            'view_any_evaluation',
+            'view_outlet',
+            'view_any_outlet',
+            'view_evaluation::criteria',
             'view reports',
         ]);
 
         // Manager role
         $managerRole = Role::create(['name' => 'manager']);
         $managerRole->givePermissionTo([
-            'view evaluations',
+            'view_evaluation',
+            'view_any_evaluation',
+            'update_evaluation',
             'approve evaluations',
             'reject evaluations',
-            'view outlets',
-            'view criteria',
+            'view_outlet',
+            'view_any_outlet',
+            'view_evaluation::criteria',
             'view reports',
             'create reports',
             'view history',
