@@ -1,61 +1,275 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Evaluation Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A comprehensive Laravel-based web application for managing structured evaluations of outlets, enabling evaluators to assess outlets against predefined criteria, record scores and comments, and maintain an auditable history of changes.
 
-## About Laravel
+## 🎯 Project Overview
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This system provides a complete solution for conducting and managing evaluations across multiple outlets with role-based access control, comprehensive audit trails, and an intuitive admin interface built with Filament.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Key Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Core Functionality
+- **Outlet Management**: Create, update, and manage outlet locations
+- **Evaluation Criteria**: Define and manage evaluation standards and scoring
+- **Evaluation Process**: Conduct evaluations with scores and comments
+- **Audit Trail**: Complete history tracking for all changes
+- **Role-Based Access**: Multi-level permissions (Admin, Manager, Evaluator)
 
-## Learning Laravel
+### Admin Panel Features
+- **Filament Admin Interface**: Modern, responsive admin panel
+- **Real-time Updates**: Livewire-powered dynamic interfaces
+- **Export/Import**: Data export capabilities
+- **Advanced Filtering**: Search and filter evaluations by multiple criteria
+- **User Management**: Complete user administration with roles and permissions
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🛠️ Technology Stack
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Laravel | ^12.0 | PHP Framework |
+| Filament | ^3.0 | Admin Panel |
+| Livewire | ^3.0 | Dynamic UI Components |
+| Spatie Laravel Permission | ^6.0 | Role-based Access Control |
+| MySQL/PostgreSQL | - | Database |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 📋 Requirements
 
-## Laravel Sponsors
+- PHP 8.2 or higher
+- Composer
+- Node.js & NPM
+- MySQL 8.0+ or PostgreSQL 12+
+- Web server (Apache/Nginx)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🚀 Installation Guide
 
-### Premium Partners
+### 1. Clone the Repository
+```bash
+git clone [repository-url]
+cd evaluator
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 2. Install Dependencies
+```bash
+# Install PHP dependencies
+composer install
 
-## Contributing
+# Install Node.js dependencies
+npm install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Environment Setup
+```bash
+# Copy environment file
+cp .env.example .env
 
-## Code of Conduct
+# Generate application key
+php artisan key:generate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 4. Database Configuration
+Update your `.env` file with database credentials:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=evaluator
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
 
-## Security Vulnerabilities
+### 5. Run Migrations and Seeders
+```bash
+# Run migrations
+php artisan migrate
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Run seeders for initial data
+php artisan db:seed
+```
 
-## License
+### 6. Build Assets
+```bash
+# Build for development
+npm run dev
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Build for production
+npm run build
+```
+
+### 7. Start the Application
+```bash
+# Using Laravel's built-in server
+php artisan serve
+
+# Or configure your web server
+```
+
+## 🔐 Default Credentials
+
+After running the seeders, you can log in with:
+- **Admin**: admin@example.com / password
+- **Manager**: manager@example.com / password
+- **Evaluator**: evaluator@example.com / password
+
+## 📊 Database Schema
+
+### Core Tables
+- **users**: User accounts and authentication
+- **outlets**: Outlet locations and details
+- **evaluations**: Main evaluation records
+- **evaluation_criteria**: Scoring criteria definitions
+- **evaluation_criteria_scores**: Individual criterion scores
+- **histories**: Complete audit trail
+- **reports**: Generated evaluation reports
+
+### Relationships
+- User → Evaluations (One-to-Many)
+- Outlet → Evaluations (One-to-Many)
+- Evaluation → EvaluationCriteriaScores (One-to-Many)
+- EvaluationCriteria → EvaluationCriteriaScores (One-to-Many)
+- All tables → Histories (Polymorphic)
+
+## 🎯 Usage Guide
+
+### Creating an Evaluation
+1. Navigate to the admin panel (`/admin`)
+2. Go to "Evaluations" section
+3. Click "New Evaluation"
+4. Select outlet and evaluator
+5. Add scores for each criterion
+6. Submit for review
+
+### Managing Criteria
+1. Go to "Evaluation Criteria" section
+2. Add new criteria with scoring rules
+3. Set minimum and maximum scores
+4. Define criteria descriptions
+
+### Viewing History
+1. Any record has a "View History" button
+2. See complete change log with timestamps
+3. Track who made changes and when
+
+## 🧪 Testing
+
+### Running Tests
+```bash
+# Run all tests
+php artisan test
+
+# Run specific test suite
+php artisan test --filter=EvaluationTest
+
+# Run with coverage
+php artisan test --coverage
+```
+
+### Test Categories
+- **Unit Tests**: Model relationships and business logic
+- **Feature Tests**: API endpoints and user workflows
+- **Browser Tests**: Filament admin panel functionality
+
+## 🔧 Development Commands
+
+### Database Commands
+```bash
+# Reset and re-seed database
+php artisan migrate:fresh --seed
+
+# Run specific seeder
+php artisan db:seed --class=RolesAndPermissionsSeeder
+```
+
+### Filament Commands
+```bash
+# Create new Filament resource
+php artisan make:filament-resource Outlet
+
+# Create new Filament page
+php artisan make:filament-page Dashboard
+```
+
+## 📁 Project Structure
+
+```
+evaluator/
+├── app/
+│   ├── Filament/Resources/     # Filament admin resources
+│   ├── Models/                 # Eloquent models
+│   ├── Policies/               # Authorization policies
+│   ├── Services/               # Business logic services
+│   └── Traits/                 # Reusable traits
+├── database/
+│   ├── migrations/             # Database migrations
+│   ├── seeders/               # Database seeders
+│   └── factories/              # Model factories
+├── resources/
+│   └── views/                  # Blade templates
+├── routes/                     # Web routes
+├── tests/                      # Test files
+└── storage/                    # Logs, cache, uploads
+```
+
+## 🛡️ Security Features
+
+- **Role-based Access Control**: Granular permissions
+- **Audit Logging**: Complete change tracking
+- **Input Validation**: Comprehensive validation rules
+- **CSRF Protection**: Laravel's built-in security
+- **SQL Injection Prevention**: Eloquent ORM protection
+
+## 📈 Performance Optimizations
+
+- **Eager Loading**: Optimized database queries
+- **Caching**: Redis support for improved performance
+- **Database Indexes**: Optimized for common queries
+- **Asset Optimization**: Vite for asset compilation
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+#### Database Connection Issues
+```bash
+# Check database connection
+php artisan tinker
+>>> DB::connection()->getPdo()
+```
+
+#### Permission Issues
+```bash
+# Fix storage permissions
+chmod -R 755 storage/
+chmod -R 755 bootstrap/cache/
+```
+
+#### Cache Issues
+```bash
+# Clear all caches
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is open-sourced software licensed under the [MIT license](LICENSE).
+
+## 📞 Support
+
+For support and questions:
+- Create an issue in the repository
+- Check existing documentation
+- Review test cases for usage examples
+
+---
+
+**Built with ❤️ using Laravel & Filament**
