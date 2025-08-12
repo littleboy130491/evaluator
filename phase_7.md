@@ -47,6 +47,7 @@
 | 2025-08-12 | Fixed TestCase setup for Filament | tests/TestCase.php | Added RefreshDatabase and Filament configuration |
 | 2025-08-12 | Updated UserResourceTest for Livewire | tests/Feature/UserResourceTest.php | Changed to use Livewire::test() for Filament resources |
 | 2025-08-12 | Fixed UserManagementTest for Filament | tests/Feature/UserManagementTest.php | Updated to test actual Filament resource actions |
+| 2025-08-12 | Fixed test_admin_can_delete_user failing | database/seeders/DatabaseSeeder.php | Changed seeder from RolesAndPermissionsSeeder to ShieldSeeder to provide correct Filament Shield permissions |
 
 ---
 

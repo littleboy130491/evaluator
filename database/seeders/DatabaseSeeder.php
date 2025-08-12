@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Seed roles, permissions and default users
-        $this->call(RolesAndPermissionsSeeder::class);
+        $this->call(ShieldSeeder::class);
 
         // Create evaluation criteria
         $this->call(EvaluationCriteriaSeeder::class);
