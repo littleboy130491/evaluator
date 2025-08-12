@@ -69,4 +69,33 @@ class Evaluation extends Model
     {
         return $this->hasMany(EvaluationCriteriaScore::class);
     }
+
+    /**
+     * Calculate total score from all criteria scores.
+     */
+    public function getTotalScoreAttribute(): int
+    {
+        return $this->criteriaScores()->sum('score');
+    }
+
+    /**
+     * Calculate maximum possible score from all criteria.
+     */
+    public function getMaxScoreAttribute(): int
+    {
+        return $this->criteriaScores()
+            ->with('criteria')
+            ->get()
+            ->sum(function ($score) {
+                return $score->criteria->max_score ?? 0;
+            });
+    }
+
+    /**
+     * Get formatted score display (XX/MAX_SCORE).
+     */
+    public function getFormattedScoreAttribute(): string
+    {
+        return $this->total_score . '/' . $this->max_score;
+    }
 }

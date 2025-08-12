@@ -47,6 +47,7 @@
 | 2024-05-01 | Created History List Page | app/Filament/Resources/HistoryResource/Pages/ListHistories.php | List page for history records |
 | 2024-05-01 | Created History View Page | app/Filament/Resources/HistoryResource/Pages/ViewHistory.php | View page for individual history records |
 | 2024-05-01 | Updated HistoryModelTest | tests/Unit/HistoryModelTest.php | Added tests for history functionality |
+| 2025-08-12 | Fixed HistoryResource Textarea styling bug | app/Filament/Resources/HistoryResource.php | Removed invalid monospace() method calls from Textarea components |
 
 ---
 

@@ -51,6 +51,9 @@
 | 2023-11-15 | Created EvaluationService tests | tests/Unit/Services/EvaluationServiceTest.php | Implemented tests for all service methods |
 | 2023-11-15 | Implemented Filament resources | app/Filament/Resources/EvaluationResource.php | Created Filament resource for managing evaluations |
 | 2023-11-15 | Created relation manager | app/Filament/Resources/EvaluationResource/RelationManagers/CriteriaScoresRelationManager.php | Implemented relation manager for criteria scores |
+| 2025-08-12 | Fixed evaluation creation from Outlet context | app/Filament/Resources/OutletResource/RelationManagers/EvaluationsRelationManager.php | Fixed SQLSTATE[23000] NOT NULL constraint violation by adding required user_id field to form with default current user |
+| 2025-08-12 | Enhanced evaluation navigation from Outlet context | app/Filament/Resources/OutletResource/RelationManagers/EvaluationsRelationManager.php | Added redirect to evaluation edit page on row click and edit action for criteria scoring |
+| 2025-08-12 | Implemented total score display functionality | app/Models/Evaluation.php, app/Filament/Resources/EvaluationResource.php, app/Filament/Resources/OutletResource/RelationManagers/EvaluationsRelationManager.php | Added XX/MAX_SCORE format display in tables and edit form with calculated total and max score attributes |
 
 ---
 

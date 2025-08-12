@@ -54,3 +54,5 @@ Develop a Laravel-based web application for managing structured evaluations of o
 | 2023-11-15 | Completed Phase 4 - Evaluation Core Functionality | Agent |
 | 2024-05-01 | Completed Phase 5 - History and Audit Logging | Agent |
 | Today | Completed Phase 6 - Admin Panel with Filament | Agent |
+| 2025-08-12 | Enhanced duplicate prevention for evaluation criteria scores - added database constraints, model validation, UI improvements, and comprehensive tests | Agent |
+| 2025-08-12 | Fixed HistoryResource Textarea styling bug - removed invalid monospace() method calls from JSON display fields | Agent |

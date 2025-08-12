@@ -20,6 +20,9 @@ class DatabaseSeeder extends Seeder
         // Seed roles, permissions and default users
         $this->call(RolesAndPermissionsSeeder::class);
 
+        // Create evaluation criteria
+        $this->call(EvaluationCriteriaSeeder::class);
+
         // Create additional evaluator users
         User::factory(3)->create()->each(function ($user) {
             $user->assignRole('evaluator');
@@ -27,9 +30,5 @@ class DatabaseSeeder extends Seeder
 
         // Create outlets
         Outlet::factory(10)->create();
-
-        // For now, we'll skip creating evaluation criteria, evaluations, and scores
-        // as there seems to be an issue with the table names
-        // We'll focus on just setting up the Filament admin panel with proper roles and permissions
     }
 }

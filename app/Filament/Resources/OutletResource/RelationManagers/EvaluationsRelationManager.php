@@ -19,6 +19,11 @@ class EvaluationsRelationManager extends RelationManager
     {
         return $form
             ->schema([
+                Forms\Components\Select::make('user_id')
+                    ->relationship('user', 'name')
+                    ->label('Evaluator')
+                    ->default(fn () => auth()->id())
+                    ->required(),
                 Forms\Components\TextInput::make('notes')
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('evaluation_date')
@@ -38,6 +43,7 @@ class EvaluationsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('id')
+            ->recordUrl(fn (Evaluation $record): string => route('filament.admin.resources.evaluations.edit', $record))
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
                     ->sortable()
@@ -55,6 +61,11 @@ class EvaluationsRelationManager extends RelationManager
                         default => 'gray',
                     })
                     ->sortable(),
+                Tables\Columns\TextColumn::make('formatted_score')
+                    ->label('Total Score')
+                    ->sortable(query: function ($query, string $direction): \Illuminate\Database\Eloquent\Builder {
+                        return $query->withSum('criteriaScores', 'score')->orderBy('criteria_scores_sum_score', $direction);
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -94,7 +105,8 @@ class EvaluationsRelationManager extends RelationManager
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->url(fn (Evaluation $record): string => route('filament.admin.resources.evaluations.edit', $record)),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

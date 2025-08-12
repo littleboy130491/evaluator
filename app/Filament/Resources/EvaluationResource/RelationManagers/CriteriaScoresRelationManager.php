@@ -24,7 +24,14 @@ class CriteriaScoresRelationManager extends RelationManager
             ->schema([
                 Forms\Components\Select::make('evaluation_criteria_id')
                     ->label('Criteria')
-                    ->options(EvaluationCriteria::where('is_active', true)->pluck('name', 'id'))
+                    ->options(function (RelationManager $livewire) {
+                        $evaluation = $livewire->getOwnerRecord();
+                        $existingCriteriaIds = $evaluation->criteriaScores()->pluck('evaluation_criteria_id')->toArray();
+                        
+                        return EvaluationCriteria::where('is_active', true)
+                            ->whereNotIn('id', $existingCriteriaIds)
+                            ->pluck('name', 'id');
+                    })
                     ->required()
                     ->searchable()
                     ->preload()
@@ -35,7 +42,8 @@ class CriteriaScoresRelationManager extends RelationManager
                             $criteria = EvaluationCriteria::find($state);
                             $set('max_score', $criteria ? $criteria->max_score : null);
                         }
-                    }),
+                    })
+                    ->helperText('Only criteria not yet scored for this evaluation are shown'),
                 
                 Forms\Components\TextInput::make('max_score')
                     ->label('Maximum Score')
@@ -58,16 +66,7 @@ class CriteriaScoresRelationManager extends RelationManager
                     ->columnSpan(1),
                 
                 Forms\Components\Textarea::make('notes')
-                    ->label('Internal Notes')
-                    ->columnSpan('full'),
-                
-                Forms\Components\Textarea::make('evaluator_comments')
-                    ->label('Evaluator Comments')
-                    ->columnSpan('full'),
-                
-                Forms\Components\TextInput::make('evidence_url')
-                    ->label('Evidence URL')
-                    ->url()
+                    ->label('Notes')
                     ->columnSpan('full'),
             ])
             ->columns(3);
@@ -96,8 +95,8 @@ class CriteriaScoresRelationManager extends RelationManager
                     ->label('Max Score')
                     ->sortable(),
                 
-                Tables\Columns\TextColumn::make('evaluator_comments')
-                    ->label('Comments')
+                Tables\Columns\TextColumn::make('notes')
+                    ->label('Notes')
                     ->limit(30),
             ])
             ->filters([
@@ -123,14 +122,66 @@ class CriteriaScoresRelationManager extends RelationManager
                             [
                                 'score' => $data['score'],
                                 'notes' => $data['notes'] ?? null,
-                                'evaluator_comments' => $data['evaluator_comments'] ?? null,
-                                'evidence_url' => $data['evidence_url'] ?? null,
                             ]
                         );
                     }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
+                    ->form(fn (Form $form) => $form
+                        ->schema([
+                            Forms\Components\Select::make('evaluation_criteria_id')
+                                ->label('Criteria')
+                                ->options(function (RelationManager $livewire, $record) {
+                                    $evaluation = $livewire->getOwnerRecord();
+                                    $existingCriteriaIds = $evaluation->criteriaScores()
+                                        ->where('id', '!=', $record->id)
+                                        ->pluck('evaluation_criteria_id')
+                                        ->toArray();
+                                    
+                                    return EvaluationCriteria::where('is_active', true)
+                                        ->whereNotIn('id', $existingCriteriaIds)
+                                        ->pluck('name', 'id');
+                                })
+                                ->required()
+                                ->searchable()
+                                ->preload()
+                                ->columnSpan(2)
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, callable $set) {
+                                    if ($state) {
+                                        $criteria = EvaluationCriteria::find($state);
+                                        $set('max_score', $criteria ? $criteria->max_score : null);
+                                    }
+                                })
+                                ->helperText('Only criteria not yet scored for this evaluation are shown'),
+                            
+                            Forms\Components\TextInput::make('max_score')
+                                ->label('Maximum Score')
+                                ->disabled()
+                                ->dehydrated(false)
+                                ->columnSpan(1),
+                            
+                            Forms\Components\TextInput::make('score')
+                                ->label('Score')
+                                ->numeric()
+                                ->required()
+                                ->minValue(0)
+                                ->maxValue(function (callable $get) {
+                                    $criteriaId = $get('evaluation_criteria_id');
+                                    if (!$criteriaId) return 100;
+                                    
+                                    $criteria = EvaluationCriteria::find($criteriaId);
+                                    return $criteria ? $criteria->max_score : 100;
+                                })
+                                ->columnSpan(1),
+                            
+                            Forms\Components\Textarea::make('notes')
+                                ->label('Notes')
+                                ->columnSpan('full'),
+                        ])
+                        ->columns(3)
+                    )
                     ->mutateFormDataUsing(function (array $data): array {
                         // Add the max_score for the form
                         $criteria = EvaluationCriteria::find($data['evaluation_criteria_id']);

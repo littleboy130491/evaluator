@@ -46,12 +46,16 @@ class HistoryResource extends Resource
                     ])->columns(2),
                 Forms\Components\Section::make('Changes')
                     ->schema([
-                        Forms\Components\JsonEditor::make('old_values')
+                        Forms\Components\Textarea::make('old_values')
                             ->label('Old Values')
-                            ->disabled(),
-                        Forms\Components\JsonEditor::make('new_values')
+                            ->disabled()
+                            ->formatStateUsing(fn ($state) => is_string($state) ? $state : json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))
+                            ->rows(10),
+                        Forms\Components\Textarea::make('new_values')
                             ->label('New Values')
-                            ->disabled(),
+                            ->disabled()
+                            ->formatStateUsing(fn ($state) => is_string($state) ? $state : json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))
+                            ->rows(10),
                     ])->columns(2),
             ]);
     }

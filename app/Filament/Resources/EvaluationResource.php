@@ -65,6 +65,12 @@ class EvaluationResource extends Resource
                         Forms\Components\Textarea::make('notes')
                             ->columnSpan('full')
                             ->disabled(fn ($record) => $record && in_array($record->status, ['approved', 'rejected'])),
+                        
+                        Forms\Components\Placeholder::make('total_score_display')
+                            ->label('Total Score')
+                            ->content(fn ($record) => $record ? $record->formatted_score : '0/0')
+                            ->columnSpan('full')
+                            ->visible(fn ($record) => $record !== null),
                     ])
                     ->columns(2),
             ]);
@@ -102,6 +108,12 @@ class EvaluationResource extends Resource
                         default => 'gray',
                     })
                     ->sortable(),
+                
+                Tables\Columns\TextColumn::make('formatted_score')
+                    ->label('Total Score')
+                    ->sortable(query: function ($query, string $direction): \Illuminate\Database\Eloquent\Builder {
+                        return $query->withSum('criteriaScores', 'score')->orderBy('criteria_scores_sum_score', $direction);
+                    }),
                 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

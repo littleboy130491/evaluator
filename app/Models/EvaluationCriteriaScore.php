@@ -33,6 +33,39 @@ class EvaluationCriteriaScore extends Model
     ];
 
     /**
+     * Validation rules
+     */
+    public static function rules(): array
+    {
+        return [
+            'evaluation_id' => 'required|exists:evaluations,id',
+            'evaluation_criteria_id' => 'required|exists:evaluation_criteria,id',
+            'score' => 'required|integer|min:0',
+            'notes' => 'nullable|string',
+        ];
+    }
+
+    /**
+     * Get validation rules with unique constraint for create
+     */
+    public static function createRules(): array
+    {
+        return array_merge(self::rules(), [
+            'evaluation_criteria_id' => 'required|exists:evaluation_criteria,id|unique:evaluation_criteria_scores,evaluation_criteria_id,NULL,id,evaluation_id',
+        ]);
+    }
+
+    /**
+     * Get validation rules with unique constraint for update
+     */
+    public static function updateRules($id, $evaluationId): array
+    {
+        return array_merge(self::rules(), [
+            'evaluation_criteria_id' => "required|exists:evaluation_criteria,id|unique:evaluation_criteria_scores,evaluation_criteria_id,{$id},id,evaluation_id,{$evaluationId}",
+        ]);
+    }
+
+    /**
      * Get the evaluation that owns the score.
      */
     public function evaluation(): BelongsTo
