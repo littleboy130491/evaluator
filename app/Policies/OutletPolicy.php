@@ -23,6 +23,17 @@ class OutletPolicy
      */
     public function view(User $user, Outlet $outlet): bool
     {
+        // Admin and super_admin can view all outlets
+        if ($user->hasAnyRole(['super_admin', 'admin'])) {
+            return $user->can('view_outlet');
+        }
+
+        // Check if user can view outlets based on group area assignment
+        if ($outlet->groupArea) {
+            return $user->can('view_outlet') && $user->canEvaluateInGroupArea($outlet->groupArea);
+        }
+
+        // Default permission check for outlets without group area
         return $user->can('view_outlet');
     }
 

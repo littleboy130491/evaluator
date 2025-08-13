@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Outlet extends Model
 {
@@ -22,7 +23,16 @@ class Outlet extends Model
         'phone_number',
         'manager_name',
         'notes',
+        'group_area_id',
     ];
+
+    /**
+     * Get the group area that owns the outlet.
+     */
+    public function groupArea(): BelongsTo
+    {
+        return $this->belongsTo(GroupArea::class);
+    }
 
     /**
      * Get the evaluations for the outlet.

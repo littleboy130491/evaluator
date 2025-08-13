@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OutletResource\Pages;
 use App\Filament\Resources\OutletResource\RelationManagers;
 use App\Models\Outlet;
+use App\Models\GroupArea;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -48,6 +49,12 @@ class OutletResource extends Resource
                             ->maxLength(255)
                             ->placeholder('Enter manager name')
                             ->columnSpan(1),
+                        Forms\Components\Select::make('group_area_id')
+                            ->label('Group Area')
+                            ->relationship('groupArea', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->columnSpan(2),
                         Forms\Components\Textarea::make('notes')
                             ->placeholder('Enter additional notes')
                             ->columnSpanFull(),
@@ -74,6 +81,12 @@ class OutletResource extends Resource
                 Tables\Columns\TextColumn::make('manager_name')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('groupArea.name')
+                    ->label('Group Area')
+                    ->searchable()
+                    ->sortable()
+                    ->badge()
+                    ->color('primary'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -88,6 +101,11 @@ class OutletResource extends Resource
                 Tables\Filters\SelectFilter::make('manager_name')
                     ->options(fn () => \App\Models\Outlet::pluck('manager_name', 'manager_name')->toArray())
                     ->label('Manager'),
+                Tables\Filters\SelectFilter::make('group_area_id')
+                    ->label('Group Area')
+                    ->relationship('groupArea', 'name')
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
