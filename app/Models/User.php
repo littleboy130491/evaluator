@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Permission\Traits\HasRoles;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -80,6 +81,55 @@ class User extends Authenticatable implements FilamentUser
     public function histories(): HasMany
     {
         return $this->hasMany(History::class);
+    }
+
+    /**
+     * Get the group areas assigned to this user.
+     */
+    public function groupAreas(): BelongsToMany
+    {
+        return $this->belongsToMany(GroupArea::class, 'group_area_user')
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the group areas where this user is an auditor.
+     */
+    public function auditorGroupAreas(): BelongsToMany
+    {
+        return $this->belongsToMany(GroupArea::class, 'group_area_user')
+            ->wherePivot('role', 'auditor')
+            ->withTimestamps();
+    }
+
+    /**
+     * Check if user can evaluate outlets in a specific group area.
+     */
+    public function canEvaluateInGroupArea(GroupArea $groupArea): bool
+    {
+        // Super admin and admin can evaluate in any group area
+        if ($this->hasAnyRole(['super_admin', 'admin'])) {
+            return true;
+        }
+
+        // Check if user is assigned as auditor to this group area
+        return $this->auditorGroupAreas()->where('group_areas.id', $groupArea->id)->exists();
+    }
+
+    /**
+     * Get outlets that this user can evaluate.
+     */
+    public function getEvaluableOutlets()
+    {
+        // Super admin and admin can evaluate all outlets
+        if ($this->hasAnyRole(['super_admin', 'admin'])) {
+            return Outlet::all();
+        }
+
+        // Get outlets from group areas where user is an auditor
+        $groupAreaIds = $this->auditorGroupAreas()->pluck('group_areas.id');
+        return Outlet::whereIn('group_area_id', $groupAreaIds)->get();
     }
 
     /**

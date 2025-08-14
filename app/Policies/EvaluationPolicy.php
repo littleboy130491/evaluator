@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\Evaluation;
+use App\Models\Outlet;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class EvaluationPolicy
@@ -23,6 +24,17 @@ class EvaluationPolicy
      */
     public function view(User $user, Evaluation $evaluation): bool
     {
+        // Admin and super_admin can view all evaluations
+        if ($user->hasAnyRole(['super_admin', 'admin'])) {
+            return $user->can('view_evaluation');
+        }
+
+        // Check if user can view evaluations based on outlet group area
+        if ($evaluation->outlet && $evaluation->outlet->groupArea) {
+            return $user->can('view_evaluation') && $user->canEvaluateInGroupArea($evaluation->outlet->groupArea);
+        }
+
+        // Default permission check for evaluations without outlet group area
         return $user->can('view_evaluation');
     }
 
@@ -31,6 +43,25 @@ class EvaluationPolicy
      */
     public function create(User $user): bool
     {
+        return $user->can('create_evaluation');
+    }
+
+    /**
+     * Determine whether the user can create evaluations for a specific outlet.
+     */
+    public function createForOutlet(User $user, Outlet $outlet): bool
+    {
+        // Admin and super_admin can create evaluations for all outlets
+        if ($user->hasAnyRole(['super_admin', 'admin'])) {
+            return $user->can('create_evaluation');
+        }
+
+        // Check if user can create evaluations based on outlet group area
+        if ($outlet->groupArea) {
+            return $user->can('create_evaluation') && $user->canEvaluateInGroupArea($outlet->groupArea);
+        }
+
+        // Default permission check for outlets without group area
         return $user->can('create_evaluation');
     }
 
